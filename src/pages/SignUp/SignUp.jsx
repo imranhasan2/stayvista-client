@@ -4,10 +4,11 @@ import useAuth from '../../hooks/useAuth'
 import axios from 'axios'
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import toast from 'react-hot-toast'
+import { imageUpload } from '../../components/api/utils';
 
 const SignUp = () => {
-  const { updateUserProfile, signInWithGoogle,createUser,loading,setLoading } = useAuth()
-const navigate =useNavigate()
+  const { updateUserProfile, signInWithGoogle, createUser, loading, setLoading } = useAuth()
+  const navigate = useNavigate()
 
 
   const handleSubmit = async (e) => {
@@ -19,28 +20,26 @@ const navigate =useNavigate()
     const image = form.image.files[0]
     console.log(name, email, password)
 
-    const formData = new FormData
-    formData.append('image',image)
+
 
     try {
       setLoading(true)
       // upload img and get image url
-      const { data } = await axios.post(`https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_API}`,formData
 
+      const img_url = await imageUpload(image)
+      console.log(img_url)
 
-      )
-      console.log(data.data.display_url)
 
       // user registration
 
-    const result = await createUser(email,password)
-    console.log(result)
+      const result = await createUser(email, password)
+      console.log(result)
 
-    // save username and photo in firebase
+      // save username and photo in firebase
 
-    updateUserProfile(name,data.data.display_ur)
-    navigate('/')
-    toast.success('signUp successfully')
+      updateUserProfile(name, img_url)
+      navigate('/')
+      toast.success('signUp successfully')
 
     } catch (error) {
       console.log(error)
@@ -49,15 +48,15 @@ const navigate =useNavigate()
 
   }
 
-const handleGoogleSignIn = async()=>{
-  try{
-    await signInWithGoogle()
-    navigate('/')
-    toast.success('signUp Successfully')
-  }catch (err){
-    console.log(err)
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle()
+      navigate('/')
+      toast.success('signUp Successfully')
+    } catch (err) {
+      console.log(err)
+    }
   }
-}
 
 
   return (
@@ -133,11 +132,11 @@ const handleGoogleSignIn = async()=>{
 
           <div>
             <button
-            disabled={loading}
+              disabled={loading}
               type='submit'
               className='bg-rose-500 w-full rounded-md py-3 text-white'
             >
-              {loading? <AiOutlineLoading3Quarters className='animate-spin m-auto' />: 'Continue'}
+              {loading ? <AiOutlineLoading3Quarters className='animate-spin m-auto' /> : 'Continue'}
             </button>
           </div>
         </form>

@@ -2,8 +2,8 @@
 
 import { categories } from '../Categories/CategoriesData'
 import { DateRange } from 'react-date-range';
-const AddRoomForm = ({dates,handleDates,handleSubmit}) => {
-  
+const AddRoomForm = ({ dates, handleDates, handleSubmit, imagePreview, imageText, handleText }) => {
+
   return (
     <div className='w-full min-h-[calc(100vh-40px)] flex flex-col justify-center items-center text-gray-800 rounded-xl bg-gray-50'>
       <form onSubmit={handleSubmit}>
@@ -46,9 +46,9 @@ const AddRoomForm = ({dates,handleDates,handleSubmit}) => {
               </label>
               {/* Calender */}
               <DateRange
-               rangeColors={['#F43F5E']}
+                rangeColors={['#F43F5E']}
                 editableDateInputs={true}
-                onChange={item =>handleDates(item)}
+                onChange={item => handleDates(item)}
                 moveRangeOnFirstSelection={false}
                 ranges={[dates]}
               />
@@ -69,23 +69,32 @@ const AddRoomForm = ({dates,handleDates,handleSubmit}) => {
               />
             </div>
 
-            <div className=' p-4 bg-white w-full  m-auto rounded-lg'>
-              <div className='file_upload px-5 py-3 relative border-4 border-dotted border-gray-300 rounded-lg'>
+            <div className=' p-4 bg-white w-full  m-auto rounded-lg flex justify-between items-center'>
+              <div className='file_upload px-5 py-3 relative border-4 border-dotted border-gray-300 rounded-lg '>
                 <div className='flex flex-col w-max mx-auto text-center'>
                   <label>
                     <input
                       className='text-sm cursor-pointer w-36 hidden'
                       type='file'
+                      onChange={e => (
+                        handleText(e.target.files[0])
+                      )}
                       name='image'
                       id='image'
                       accept='image/*'
                       hidden
                     />
                     <div className='bg-rose-500 text-white border border-gray-300 rounded font-semibold cursor-pointer p-1 px-3 hover:bg-rose-500'>
-                      Upload Image
+                    
+                      { 
+                      imageText?.length > 20 ? imageText.split('.')[0].slice(0,15) + '.' + imageText.split('.')[1] : imageText
+                       || "upload image"}
                     </div>
                   </label>
                 </div>
+              </div>
+              <div className='h-16 w-16 object-cover overflow-hidden flex justify center'>
+                {imagePreview && <img src={imagePreview} alt="" />}
               </div>
             </div>
             <div className='flex justify-between gap-2'>

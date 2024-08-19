@@ -43,9 +43,9 @@ const AuthProvider = ({ children }) => {
 
   const logOut = async () => {
     setLoading(true)
-    // await axios.get(`${import.meta.env.VITE_API_URL}/logout`, {
-    //   withCredentials: true,
-    // })
+    await axios.get(`${import.meta.env.VITE_API_URL}/logout`, {
+      withCredentials: true,
+    })
     return signOut(auth)
   }
 
@@ -56,22 +56,39 @@ const AuthProvider = ({ children }) => {
     })
   }
   // Get token from server
-  // const getToken = async email => {
-  //   const { data } = await axios.post(
-  //     `${import.meta.env.VITE_API_URL}/jwt`,
-  //     { email },
-  //     { withCredentials: true }
-  //   )
-  //   return data
-  // }
+  const getToken = async email => {
+    const { data } = await axios.post(
+      `${import.meta.env.VITE_API_URL}/jwt`,
+      { email },
+      { withCredentials: true }
+    )
+    return data
+  }
+
+
+  const saveUser = async user => {
+    const currentUser = {
+      email: user?.email,
+      role: 'guest',
+      status: 'Verified'
+    };
+    try {
+      const { data } = await axios.put(`http://localhost:8000/user`, currentUser)
+      return data
+    } catch (err) {
+      console.log('Error saving user:',err)
+    }
+
+  }
 
   // onAuthStateChange
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, currentUser => {
+    const unsubscribe = onAuthStateChanged(auth, async currentUser => {
       setUser(currentUser)
-      // if (currentUser) {
-      //   getToken(currentUser.email)
-      // }
+      if (currentUser) {
+        await getToken(currentUser.email)
+        await saveUser(currentUser)
+      }
       setLoading(false)
     })
     return () => {
